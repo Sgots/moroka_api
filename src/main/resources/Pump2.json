@@ -1,0 +1,34 @@
+{
+  "id" : 25,
+  "device_uuid" : 11111111,
+  "device_serial_number" : "22222222",
+  "device_name" : "Pump2",
+  "mac_address" : "332211",
+  "delete_status" : 0,
+  "attach_status" : 0,
+  "device_status" : 1,
+  "dataResponse" : {
+    "id" : 15420,
+    "deviceName" : "Pump",
+    "deviceID" : 11111111,
+    "deviceTypeID" : 3,
+    "deviceSubTypeID" : 1,
+    "batteryLevel" : 1,
+    "deviceState" : 0,
+    "controlState" : 1,
+    "field" : {
+      "id" : 6,
+      "field_name" : "Nkgobotwane",
+      "field_location" : "Phikwe",
+      "field_size" : 100.0,
+      "field_size_unit" : "Acres",
+      "delete_status" : 0
+    },
+    "command" : "deviceDataResponse",
+    "timeStamp" : "2023-07-14 12:28:06"
+  },
+  "control_topic" : "6/11111111/control",
+  "data_topic" : "6/11111111/data",
+  "notification_topic" : "6/11111111/notification",
+  "deviceState_topic" : "6/11111111/deviceState"
+}

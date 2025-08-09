@@ -1,0 +1,15 @@
+{
+  "id" : 27,
+  "device_uuid" : 4545,
+  "device_serial_number" : "55544332",
+  "device_name" : "Pump",
+  "mac_address" : "11:22:33:44",
+  "delete_status" : 0,
+  "attach_status" : 0,
+  "device_status" : 0,
+  "dataResponse" : null,
+  "control_topic" : "7/4545/control",
+  "data_topic" : "7/4545/data",
+  "notification_topic" : "7/4545/notification",
+  "deviceState_topic" : "7/4545/deviceState"
+}

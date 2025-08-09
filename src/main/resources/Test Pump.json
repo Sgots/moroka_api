@@ -1,0 +1,15 @@
+{
+  "id" : 21,
+  "device_uuid" : 888,
+  "device_serial_number" : "765432",
+  "device_name" : "Test Pump",
+  "mac_address" : "",
+  "delete_status" : 0,
+  "attach_status" : 0,
+  "device_status" : 0,
+  "dataResponse" : null,
+  "control_topic" : "1/888/control",
+  "data_topic" : "1/888/data",
+  "notification_topic" : "1/888/notification",
+  "deviceState_topic" : "1/888/deviceState"
+}

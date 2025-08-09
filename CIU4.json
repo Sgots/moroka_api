@@ -1,0 +1,15 @@
+{
+  "id" : 4,
+  "device_uuid" : 320,
+  "device_serial_number" : "2842",
+  "device_name" : "CIU4",
+  "mac_address" : "",
+  "delete_status" : 0,
+  "attach_status" : 0,
+  "device_status" : 0,
+  "dataResponse" : null,
+  "control_topic" : "1/320/control",
+  "data_topic" : "1/320/data",
+  "notification_topic" : "1/320/notification",
+  "deviceState_topic" : "1/320/deviceState"
+}

@@ -1,0 +1,15 @@
+{
+  "id" : 28,
+  "device_uuid" : 12345678,
+  "device_serial_number" : "1212",
+  "device_name" : "Testing Sensor",
+  "mac_address" : "",
+  "delete_status" : 0,
+  "attach_status" : 0,
+  "device_status" : 0,
+  "dataResponse" : null,
+  "control_topic" : "12345678/control",
+  "data_topic" : "12345678/data",
+  "notification_topic" : "12345678/notification",
+  "deviceState_topic" : "12345678/deviceState"
+}

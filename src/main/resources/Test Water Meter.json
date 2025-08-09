@@ -1,0 +1,15 @@
+{
+  "id" : 22,
+  "device_uuid" : 555,
+  "device_serial_number" : "56789",
+  "device_name" : "Test Water Meter",
+  "mac_address" : "",
+  "delete_status" : 0,
+  "attach_status" : 0,
+  "device_status" : 0,
+  "dataResponse" : null,
+  "control_topic" : "1/555/control",
+  "data_topic" : "1/555/data",
+  "notification_topic" : "1/555/notification",
+  "deviceState_topic" : "1/555/deviceState"
+}

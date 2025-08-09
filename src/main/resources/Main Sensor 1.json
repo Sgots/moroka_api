@@ -1,0 +1,15 @@
+{
+  "id" : 24,
+  "device_uuid" : 112233,
+  "device_serial_number" : "11223344",
+  "device_name" : "Main Sensor 1",
+  "mac_address" : "11:22:33:44:ee",
+  "delete_status" : 0,
+  "attach_status" : 0,
+  "device_status" : 0,
+  "dataResponse" : null,
+  "control_topic" : "6/112233/control",
+  "data_topic" : "6/112233/data",
+  "notification_topic" : "6/112233/notification",
+  "deviceState_topic" : "6/112233/deviceState"
+}

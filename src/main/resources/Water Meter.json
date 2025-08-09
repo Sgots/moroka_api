@@ -1,0 +1,15 @@
+{
+  "id" : 18,
+  "device_uuid" : 7070,
+  "device_serial_number" : "6060",
+  "device_name" : "Water Meter",
+  "mac_address" : "",
+  "delete_status" : 0,
+  "attach_status" : 0,
+  "device_status" : 0,
+  "dataResponse" : null,
+  "control_topic" : "1/7070/control",
+  "data_topic" : "1/7070/data",
+  "notification_topic" : "1/7070/notification",
+  "deviceState_topic" : "1/7070/deviceState"
+}

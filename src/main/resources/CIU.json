@@ -1,0 +1,55 @@
+{
+  "id": 58,
+  "device_type_id": 1,
+  "device_sub_type_id": 0,
+  "field_id": 6,
+  "device_uuid": 444444444,
+  "device_serial_number": "444445555",
+  "device_name": "CIU",
+  "mac_address": "33344555",
+  "command": "configurationReadyRequest",
+  "delete_status": 0,
+  "device_status": 0,
+  "encryptionSettings": {
+    "id": 302,
+    "encryptionKey": "TVRJek5EVTJOemc1TURFeU16UTFOamM0T1RBeE1qTTBOVFkzT0Rrd01UST0=",
+    "iv2": "WVdKalpHVm1aMmhwYW10c2JXNXZjQT09",
+    "iv1": "TVRJek5EVTJOemc1TURFeU16UTFOZz09"
+  },
+  "topics": {
+    "id": 17,
+    "controlTopic": "6/444444444/control",
+    "dataTopic": "6/444444444/data",
+    "notificationTopic": "6/444444444/notification",
+    "deviceStateTopic": "6/444444444/deviceState",
+    "configurationReadyTopic": "6/444444444/configurationReady",
+    "irrigationOverrideTopic": "6/444444444/irrigationOverride"
+  },
+  "mqttServerConfig": {
+    "id": 49,
+    "mqttServerConfigUrl": "http://localhost:8080/echoPost",
+    "mqttServerUrl": "tcp://localhost:1883",
+    "mqttUsername": "emqx_test",
+    "mqttPassword": "emqx_test_password",
+    "mqttClientId": "12345"
+  },
+  "attachedDevices": [
+    {
+      "id": 26,
+      "device_uuid": 4444444,
+      "device_serial_number": "44333222",
+      "device_name": "Flow Meter",
+      "mac_address": "33224433",
+      "delete_status": 0,
+      "attach_status": 0,
+      "device_status": 0,
+      "dataResponse": null,
+      "control_topic": "6/4444444/control",
+      "data_topic": "6/4444444/data",
+      "notification_topic": "6/4444444/notification",
+      "deviceState_topic": "6/4444444/deviceState"
+    }
+  ],
+  "attachedAreas": null,
+  "attachedPatches": null
+}

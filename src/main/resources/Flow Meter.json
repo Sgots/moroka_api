@@ -1,0 +1,15 @@
+{
+  "id" : 26,
+  "device_uuid" : 4444444,
+  "device_serial_number" : "44333222",
+  "device_name" : "Flow Meter",
+  "mac_address" : "33224433",
+  "delete_status" : 0,
+  "attach_status" : 0,
+  "device_status" : 0,
+  "dataResponse" : null,
+  "control_topic" : "6/4444444/control",
+  "data_topic" : "6/4444444/data",
+  "notification_topic" : "6/4444444/notification",
+  "deviceState_topic" : "6/4444444/deviceState"
+}

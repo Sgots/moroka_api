@@ -1,0 +1,15 @@
+{
+  "id" : 2,
+  "device_uuid" : 333,
+  "device_serial_number" : "11223344",
+  "device_name" : "Main CIU 0",
+  "mac_address" : "",
+  "delete_status" : 0,
+  "attach_status" : 0,
+  "device_status" : 0,
+  "dataResponse" : null,
+  "control_topic" : "1/333/control",
+  "data_topic" : "1/333/data",
+  "notification_topic" : "1/333/notification",
+  "deviceState_topic" : "1/333/deviceState"
+}

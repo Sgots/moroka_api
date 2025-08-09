@@ -1,0 +1,75 @@
+{
+  "id": 54,
+  "device_type_id": 1,
+  "device_sub_type_id": 0,
+  "field_id": 1,
+  "device_uuid": 1255,
+  "device_serial_number": "35266",
+  "device_name": "CIU Masunga",
+  "mac_address": "",
+  "command": "configurationReadyRequest",
+  "delete_status": 0,
+  "device_status": 0,
+  "encryptionSettings": {
+    "id": 153,
+    "encryptionKey": "TVRJek5EVTJOemc1TURFeU16UTFOamM0T1RBeE1qTTBOVFkzT0Rrd01UST0=",
+    "iv2": "WVdKalpHVm1aMmhwYW10c2JXNXZjQT09",
+    "iv1": "TVRJek5EVTJOemc1TURFeU16UTFOZz09"
+  },
+  "topics": {
+    "id": 13,
+    "controlTopic": "1/1255/control",
+    "dataTopic": "1/1255/data",
+    "notificationTopic": "1/1255/notification",
+    "deviceStateTopic": "1/1255/deviceState",
+    "configurationReadyTopic": "1/1255/configurationReady",
+    "irrigationOverrideTopic": "1/1255/irrigationOverride"
+  },
+  "mqttServerConfig": {
+    "id": 45,
+    "mqttServerConfigUrl": "http://localhost:8080/echoPost",
+    "mqttServerUrl": "tcp://localhost:1883",
+    "mqttUsername": "emqx_test",
+    "mqttPassword": "emqx_test_password",
+    "mqttClientId": "12345"
+  },
+  "attachedDevices": [
+    {
+      "id": 16,
+      "device_uuid": 1023,
+      "device_serial_number": "jhgk-mnhb-5656",
+      "device_name": "Sensor",
+      "mac_address": "::01:22::00",
+      "delete_status": 0,
+      "attach_status": 0,
+      "device_status": 1,
+      "dataResponse": {
+        "id": 14941,
+        "deviceName": "Sensor",
+        "deviceID": 1023,
+        "deviceTypeID": 2,
+        "deviceSubTypeID": 1,
+        "batteryLevel": 0,
+        "deviceState": 0,
+        "controlState": 1,
+        "field": {
+          "id": 1,
+          "field_name": "Masunga Gardens",
+          "field_location": "Masunga",
+          "field_size": 5000.0,
+          "field_size_unit": "Hectares",
+          "delete_status": 0
+        },
+        "command": "deviceDataResponse",
+        "timeStamp": "2023-07-04 12:26:26"
+      },
+      "control_topic": "1/1023/control",
+      "data_topic": "1/1023/data",
+      "notification_topic": "1/1023/notification",
+      "deviceState_topic": "1/1023/deviceState",
+      "master_device_id": null
+    }
+  ],
+  "attachedAreas": null,
+  "attachedPatches": null
+}
