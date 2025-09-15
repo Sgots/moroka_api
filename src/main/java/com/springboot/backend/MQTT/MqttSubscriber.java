@@ -1,6 +1,8 @@
 package com.springboot.backend.MQTT;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.backend.model.DataResponse;
 import com.springboot.backend.model.Field;
@@ -16,10 +18,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,12 +33,17 @@ import java.util.Optional;
 public class MqttSubscriber implements ApplicationContextAware {
 
     private static final Logger log = LoggerFactory.getLogger(MqttSubscriber.class);
+    private static final DateTimeFormatter TS_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss[.SSS]");
 
+    @Autowired
+    private static JdbcTemplate jdbcTemplate;
     private static final String MYSQL_URL = "jdbc:mysql://localhost:3306/moroka?autoReconnect=true&useSSL=false";
     private static final String MYSQL_USER = "admin";
     private static final String MYSQL_PASS = "moroka"; // TODO: move to properties
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
+
 
     @Autowired private DeviceTypeRepository deviceTypeRepository;
     @Autowired private static DeviceRepository deviceRepository;
@@ -49,12 +60,14 @@ public class MqttSubscriber implements ApplicationContextAware {
                           MqttClient mqttClient,
                           FieldRepository fieldRepository,
                           DataResponseRepository dataResponseRepository,
-                          SensorDataRepository sensorDataRepository) {
+                          SensorDataRepository sensorDataRepository, JdbcTemplate jdbcTemplate) throws SQLException {
         MqttSubscriber.deviceRepository = deviceRepository;
         MqttSubscriber.fieldRepository = fieldRepository;
         MqttSubscriber.dataResponseRepository = dataResponseRepository;
         this.sensorDataRepository = sensorDataRepository;
         MqttSubscriber.mqttClient = mqttClient;
+        this.jdbcTemplate = jdbcTemplate; // ✅ now never null
+
     }
 
     @PostConstruct
@@ -115,8 +128,8 @@ public class MqttSubscriber implements ApplicationContextAware {
                     }
                 } catch (Throwable ex) {
                     // Never let exceptions escape the MQTT callback
-                    log.error("Unhandled exception processing MQTT message. topic={}, payload={}",
-                            t, trimForLog(message), ex);
+                    log.error("Unhandled exception processing MQTT message. topic={}, payload={}");
+                          //  t, TopicParts.trimForLog(message), ex);
                 }
             });
             log.info("Subscribed to topic: {}", topic);
@@ -129,6 +142,13 @@ public class MqttSubscriber implements ApplicationContextAware {
 
     // ---------- CONTROL ----------
     private static void handleControlMessage(String topic, String message) {
+        ObjectMapper mapper = new ObjectMapper();
+        DateTimeFormatter TS_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss[.SSS]");
+
+        // Call this when you receive an MQTT message on a /data topic
+
+
+
         final var parts = safeTopicParts(topic).orElse(null);
         if (parts == null) {
             log.warn("Invalid control topic format: {}", topic);
@@ -148,7 +168,7 @@ public class MqttSubscriber implements ApplicationContextAware {
 
             ensureFieldExists(fieldId);
 
-            DataResponse responseID = dataResponseRepository.findDeviceByID(deviceID);
+            DataResponse responseID = dataResponseRepository.findLatestIdByDeviceId(deviceID);
             if (responseID == null) {
                 log.warn("No DataResponse found for deviceID={} (cannot update device_status)", deviceID);
                 return;
@@ -175,13 +195,11 @@ public class MqttSubscriber implements ApplicationContextAware {
 
     // ---------- DATA ----------
     // ---- DATA (single, consistent implementation for all deviceTypeIDs) ----
-    private static void handleDataMessage(String topic, String message) {
+    private static void handleDataMessage(String topic, String message) throws JsonProcessingException {
         final var parts = safeTopicParts(topic).orElse(null);
-        if (parts == null) {
-            log.warn("Invalid data topic format: {}", topic);
-            return;
-        }
+
         final long fieldId = parts.fieldId();
+        JsonNode root = mapper.readTree(message);
 
         try {
             JSONObject json = new JSONObject(message);
@@ -192,7 +210,7 @@ public class MqttSubscriber implements ApplicationContextAware {
                 return;
             }
 
-            ensureFieldExists(fieldId);
+       // ensureFieldExists(fieldId);
 
             final String deviceName     = json.optString("deviceName", "");
             final long   deviceID       = json.optLong("deviceID", -1);
@@ -218,6 +236,46 @@ public class MqttSubscriber implements ApplicationContextAware {
 
             // 2) Link latest DataResponse to device (tbl_devices.deviceResponseID)
             linkLatestDataResponseToDevice(deviceID);
+            if (deviceTypeID==2){
+
+                // Parse timestamp (handles "yyyy-MM-dd HH:mm:ss" and "yyyy-MM-dd HH:mm:ss.SSS")
+
+                LocalDateTime ldt = LocalDateTime.parse(timeStampStr, TS_FMT);
+                Timestamp ts = Timestamp.valueOf(ldt);
+
+// ...inside handleDeviceDataResponse(...)
+
+                JsonNode sensorData = root.path("sensorData");
+                if (!sensorData.isArray()) return;
+
+// Collect rows into a strongly-typed list
+                List<JsonNode> rows = new ArrayList<>();
+                sensorData.forEach(rows::add);
+
+                final String sql = """
+                    INSERT INTO tbl_sensor_data
+                      (ec, tds, device_id, layer_level, moisture, nitrogen, phosphorus, potassium, salinity, temperature, timestamp)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """;
+
+// Explicitly type the setter to JsonNode so .path(...) resolves
+                jdbcTemplate.batchUpdate(sql, rows, 100,
+                        (PreparedStatement ps, JsonNode node) -> {
+                            ps.setString(1, node.path("EC").asText(null));
+                            ps.setString(2, node.path("TDS").asText(null));
+                            ps.setString(3, String.valueOf(deviceID));
+                            ps.setString(4, node.path("LayerLevel").asText(null));
+                            ps.setString(5, node.path("Moisture").asText(null));
+                            ps.setString(6, node.path("Nitrogen").asText(null));
+                            ps.setString(7, node.path("Phosphorus").asText(null));
+                            ps.setString(8, node.path("Potassium").asText(null));
+                            ps.setString(9, node.path("Salinity").asText(null));
+                            ps.setString(10, node.path("Temperature").asText(null));
+                            ps.setTimestamp(11, ts);
+                        }
+                );
+
+            }
 
             // 3) Type-specific extras
             if (deviceTypeID == 4) {
@@ -298,7 +356,7 @@ public class MqttSubscriber implements ApplicationContextAware {
 
     /** After inserting data_response, link the latest row to tbl_devices.deviceResponseID */
     private static void linkLatestDataResponseToDevice(long deviceId) throws SQLException {
-        DataResponse latest = dataResponseRepository.findDeviceByID(deviceId);
+        DataResponse latest = dataResponseRepository.findLatestIdByDeviceId(deviceId);
         if (latest == null) {
             log.warn("No DataResponse found to link for deviceId={}", deviceId);
             return;
@@ -360,7 +418,7 @@ public class MqttSubscriber implements ApplicationContextAware {
             int rows = ps.executeUpdate();
             log.info("Inserted tbl_data_response (generic) rows={}; device_id={}", rows, device_uuid);
 
-            DataResponse dr = dataResponseRepository.findDeviceByID(device_uuid);
+            DataResponse dr = dataResponseRepository.findLatestIdByDeviceId(device_uuid);
             if (dr == null) {
                 log.warn("DataResponse not found after insert for device_uuid={}", device_uuid);
                 return;
@@ -445,7 +503,7 @@ public class MqttSubscriber implements ApplicationContextAware {
         catch (Exception e) { return def; }
     }
 
-    private static String trimForLog(String s) {
+    static String trimForLog(String s) {
         if (s == null) return "";
         return s.length() <= 1000 ? s : s.substring(0, 1000) + "...[truncated]";
     }

@@ -57,6 +57,26 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
             "AND ts.layer_level = ?4 " +
             "ORDER BY ts.id DESC LIMIT 1", nativeQuery = true)
     List<Device> findDevicesWithSensorData(Long fieldId, Long userId, String deviceUuid, Integer layerLevel);
+    @Query(value = """
+        SELECT * 
+        FROM tbl_devices d
+        WHERE d.areaID = :areaId
+          AND d.user_id = :userId
+          AND d.delete_status = 0
+        ORDER BY d.deviceID ASC
+        """, nativeQuery = true)
+    List<Device> findActiveByAreaAndUser(@Param("areaId") long areaId,
+                                         @Param("userId") long userId);
 
+    @Query(value = """
+      SELECT * 
+      FROM tbl_devices d
+      WHERE d.patchID = :patchId
+        AND d.user_id = :userId
+        AND d.delete_status = 0
+      ORDER BY d.deviceID ASC
+      """, nativeQuery = true)
+    List<Device> findPatchDevices(@Param("patchId") long patchId,
+                                  @Param("userId") long userId);
 
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static com.springboot.backend.MQTT.MqttSubscriber.subscribeToTopic;
 
@@ -123,5 +124,19 @@ public class IrrigationPlanServiceImpl implements IrrigationPlanService {
 
         return fieldRepository.save(field);
     }
+    // src/main/java/.../service/IrrigationPlanService.java
 
-}
+        public IrrigationPlanDTO getPlanWithDates(long id) {
+            Map<String,Object> row = irrigationPlanRepository.findPlanWithDatesRaw(id);
+            if (row == null) return null;
+            return new IrrigationPlanDTO(
+                    ((Number)row.get("id")).longValue(),
+                    (String) row.get("plan_name"),
+                    (String) row.get("plan_description"),
+                    row.get("delete_status") == null ? 0 : ((Number)row.get("delete_status")).intValue(),
+                    (String) row.get("start_date"),  // can be null
+                    (String) row.get("end_date")     // can be null
+            );
+        }
+    }
+

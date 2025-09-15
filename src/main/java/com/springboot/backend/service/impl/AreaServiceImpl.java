@@ -13,6 +13,7 @@ import com.springboot.backend.request.UpdateFieldRequest;
 import com.springboot.backend.service.AreaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 @Service
@@ -93,5 +94,10 @@ public class AreaServiceImpl implements AreaService {
         return areaRepository.save(addArea);
     }
 
-
+    @Transactional(readOnly = true)
+    public List<Area.AreaFieldDto> getAreaField(Long fieldId) {
+        return areaRepository.findByFieldId(fieldId).stream()
+                .map(Area.AreaFieldDto::from)
+                .toList();
+    }
 }

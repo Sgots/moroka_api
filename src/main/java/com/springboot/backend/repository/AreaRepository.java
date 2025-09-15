@@ -33,4 +33,7 @@ public interface AreaRepository extends JpaRepository<Area, Integer> {
     @Query("from Area ta join Field tf on ta.field.id = tf.id where ta.id = :id")
     Area findArea(@Param("id") int id);
 
+    @Query("select a from Area a where a.field.id = :fieldId")
+    List<Area> findByFieldId(@Param("fieldId") Long fieldId);
+
 }

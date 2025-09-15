@@ -46,14 +46,17 @@ public class DeviceController {
         return ResponseEntity.ok(addedDevice);
     }
 
-    @PutMapping("attach-device/{fieldId}/{deviceId}")
-    public ResponseEntity<Device> updateDeviceTopics(
-            @PathVariable("fieldId") long fieldId,
-            @PathVariable("deviceId") long deviceId) {
-
-        Device attachDeviceDevice = deviceService.attachDevice(fieldId, deviceId);
-        return ResponseEntity.ok(attachDeviceDevice);
+    // src/main/java/com/springboot/backend/controller/DeviceController.java
+    @PutMapping("/attach-device/{fieldId}/{areaId}/{patchId}/{deviceId}")
+    public ResponseEntity<Device> attachDeviceToPatch(
+            @PathVariable long fieldId,
+            @PathVariable int areaId,
+            @PathVariable long patchId,
+            @PathVariable long deviceId) {
+        Device d = deviceService.attachDevice(fieldId, areaId, patchId, deviceId);
+        return ResponseEntity.ok(d);
     }
+
 
     // Endpoint to detach the fieldID from a device
     @PutMapping("detach-device/{deviceID}")
@@ -114,5 +117,19 @@ public class DeviceController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+    @GetMapping("/area-devices/{areaId}/{userId}")
+    public ResponseEntity<List<Device>> getAreaDevices(
+            @PathVariable int areaId,
+            @PathVariable long userId) {
+        List<Device> devices = deviceService.getAreaDevices(areaId, userId);
+        return ResponseEntity.ok(devices);
+    }
+    @GetMapping("/fetchPatchDevice/{patchId}/{userId}")
+    public ResponseEntity<List<Device>> fetchPatchDevice(
+            @PathVariable long patchId,
+            @PathVariable long userId) {
+        List<Device> devices = deviceService.getPatchDevices(patchId, userId);
+        return ResponseEntity.ok(devices);
     }
 }

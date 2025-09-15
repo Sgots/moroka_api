@@ -38,11 +38,10 @@ public class Field {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
 
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "area_id")
+    // Keep this collection LAZY and mapped by the owning side's field property
+    @OneToMany(mappedBy = "field", fetch = FetchType.LAZY)
+    @JsonIgnore   // prevents Jackson from walking into the collection
     private List<Area> areas = new ArrayList<>();
-
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "irrigation_plan_id", referencedColumnName = "irrigation_plan_id")

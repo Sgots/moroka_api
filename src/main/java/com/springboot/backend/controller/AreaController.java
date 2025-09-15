@@ -9,6 +9,7 @@ import com.springboot.backend.request.AddAreaRequest;
 import com.springboot.backend.request.UpdateAreaRequest;
 import com.springboot.backend.request.UpdateDeviceRequest;
 import com.springboot.backend.service.AreaService;
+import com.springboot.backend.service.impl.AreaServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,8 @@ public class AreaController {
 
     @Autowired
     private AreaService areaService;
+    @Autowired
+    private AreaServiceImpl areaServiceImp;
     @Autowired
     private AreaRepository areaRepository;
 
@@ -55,9 +58,9 @@ public class AreaController {
 
     //create get area by field ID REST API
     //http://localhost:8080/api/v1/area/1/1
-    @GetMapping("/get-area-field/{field_id}")
-    public List<?> findAreaByFiledID(@Valid @RequestBody @PathVariable("field_id") long fieldId){
-        return areaService.findAreabyFiedID(fieldId);
+    @GetMapping("/get-area-field/{fieldId}")
+    public ResponseEntity<List<Area.AreaFieldDto>> getAreaField(@PathVariable Long fieldId) {
+        return ResponseEntity.ok(areaServiceImp.getAreaField(fieldId));
     }
 
     @GetMapping("/find-field-area/{area_id}")

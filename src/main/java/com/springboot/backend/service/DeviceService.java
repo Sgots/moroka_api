@@ -14,7 +14,12 @@ public interface DeviceService {
 
     MasterDevice addMaster(AddMasterDeviceRequest request);
 
-    Device attachDevice(long fieldID, long deviceID);
+    // src/main/java/com/springboot/backend/service/DeviceService.java
+    Device attachDevice(long fieldId, int areaId,long patchId, long deviceId);
+    List<Device> getAreaDevices(int areaId, long userId);
+    List<Device> getPatchDevices(long patchId, long userId);
+
+
 
     Device detachDevice(long device);
 

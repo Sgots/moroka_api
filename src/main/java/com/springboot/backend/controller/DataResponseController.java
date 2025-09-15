@@ -37,7 +37,7 @@ public class DataResponseController {
 
     @RequestMapping(value = "/device-response/{id}", method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public DataResponse deviceResponseByID(@PathVariable("id") long deviceID){
-        return dataResponseRepository.findDeviceByID(deviceID);
+        return dataResponseRepository.findLatestIdByDeviceId(deviceID);
     }
 
     @RequestMapping(value = "/field-response/{id}", method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)

@@ -15,9 +15,10 @@ public class SensorDataImpl implements SensorDataService {
     private SensorDataRepository sensorDataRepo;
 
     @Override
-    public List<SensorData> getAllById(long id,long layer_level) {
-        return sensorDataRepo.getSensorData(id, layer_level);
+    public List<SensorData> getAllById(long id, long layer_level) {
+        return null;
     }
+
     @Override
     public List<SensorData> findAllByDeviceID(long id) {
         return sensorDataRepo.findAllByDeviceID(id);

@@ -9,10 +9,29 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public interface IrrigationPlanRepository extends JpaRepository<IrrigationPlan, Long> {
 
     IrrigationPlan findIrrigationPlanById(long id);
+    // src/main/java/.../repo/IrrigationPlanRepository.java
+        @Query(
+                value = """
+      SELECT p.irrigation_plan_id       AS id,
+             p.plan_name                AS plan_name,
+             p.plan_description         AS plan_description,
+             p.delete_status            AS delete_status,
+             MIN(pp.start_date)         AS start_date,
+             MAX(pp.end_date)           AS end_date
+        FROM tbl_irrigation_plans p
+        LEFT JOIN tbl_irrigation_plan_period pp
+               ON pp.irrigation_plan_id = p.irrigation_plan_id
+       WHERE p.irrigation_plan_id = :id
+       GROUP BY p.irrigation_plan_id, p.plan_name, p.plan_description, p.delete_status
+      """,
+                nativeQuery = true)
+        Map<String,Object> findPlanWithDatesRaw(@Param("id") long id);
+
 
     //IrrigationPlan addPlan(IrrigationPlan irrigationPlan, IrrigationPlanPeriod irrigationPlanPeriod, IrrigationPlanPeriodTimes irrigationPlanPeriodTimes);
 

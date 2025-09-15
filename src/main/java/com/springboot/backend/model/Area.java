@@ -37,7 +37,8 @@ public class Area {
     private int delete_status = 0;
 
     //@JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+// Do NOT cascade ALL from child to parent; and make it LAZY
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "field_id", referencedColumnName = "field_id")
     private Field field;
 
@@ -50,4 +51,20 @@ public class Area {
     @JoinColumn(name = "irrigation_plan_id", referencedColumnName = "irrigation_plan_id")
     private IrrigationPlan irrigationPlan;
 
+    public record AreaFieldDto(
+            int areaId,
+            String areaName,
+            Long fieldId,
+            String fieldName
+    ) {
+        public static AreaFieldDto from(Area af) {
+            return new AreaFieldDto(
+                    af.id,
+                    af.area_name,
+                    af.getField().getId(),
+                    af.getField().getField_name()
+            );
+        }
+
+    }
 }

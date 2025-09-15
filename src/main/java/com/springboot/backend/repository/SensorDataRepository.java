@@ -16,7 +16,7 @@ public interface SensorDataRepository extends JpaRepository<SensorData, Long> {
     List<SensorData> findAllByDeviceID(long id);*/
 
     @Query(value="select * from tbl_sensor_data where device_id =? and layer_level=? order by id desc limit 1", nativeQuery=true)
-    List<SensorData> getSensorData(long device_id, long layer_level);
+    List<SensorData> getSensorData(String device_id, long layer_level);
     @Query(value = """
         select tbl_sensor_data.*
         from tbl_sensor_data

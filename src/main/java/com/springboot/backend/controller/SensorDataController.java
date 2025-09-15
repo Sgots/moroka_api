@@ -24,7 +24,7 @@ public class SensorDataController {
     }
 
     @RequestMapping(value = "/sensorData/{id}/{layer_level}", method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    public List<SensorData> getSensorData(@PathVariable("id") long deviceID,@PathVariable("layer_level")  long layerLevel){
+    public List<SensorData> getSensorData(@PathVariable("id") String deviceID,@PathVariable("layer_level")  long layerLevel){
         return sensorDataRepo.getSensorData(deviceID,layerLevel);
     }
     @RequestMapping(value = "/sensorData/{id}", method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)

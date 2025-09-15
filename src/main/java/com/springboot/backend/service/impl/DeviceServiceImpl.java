@@ -19,6 +19,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -42,6 +43,10 @@ public class DeviceServiceImpl implements DeviceService {
     private DeviceSubTypeRepository deviceSubTypeRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PatchRepository patchRepository;
+    @Autowired
+    private AreaRepository areaRepository;
     @Autowired
     private FieldRepository fieldRepository;
 
@@ -225,44 +230,49 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
 
+    // src/main/java/com/springboot/backend/service/impl/DeviceServiceImpl.java
     @Override
-    public Device attachDevice(long fieldId, long deviceId) {
+    @Transactional
+    public Device attachDevice(long fieldId, int areaId,long patchId, long deviceId) {
         Device device = deviceRepository.findById(deviceId)
-                .orElseThrow(() -> new EntityNotFoundException("Device not found with ID: " + deviceId));
+                .orElseThrow(() -> new EntityNotFoundException("Device not found: " + deviceId));
 
-        device.setField(device.getField());
-        String controlTopic = fieldId + "/" + device.getDevice_uuid() + "/control";
-        String dataTopic = fieldId + "/" + device.getDevice_uuid() + "/data";
-        String notificationTopic = fieldId + "/" + device.getDevice_uuid() + "/notification";
-        String deviceStateTopic = fieldId + "/" + device.getDevice_uuid() + "/deviceState";
-        //String configurationReadyTopic = fieldId + "/" + device.getDevice_uuid() + "/configurationReady";
-
-        device.setControl_topic(controlTopic);
-        device.setData_topic(dataTopic);
-        device.setNotification_topic(notificationTopic);
-        device.setDeviceState_topic(deviceStateTopic);
-        // device.setConfigurationReady_topic(configurationReadyTopic);
-
-        Device updatedDevice = deviceRepository.save(device);
         Field field = fieldRepository.findById(fieldId)
-                .orElseThrow(() -> new EntityNotFoundException("Field not found with ID: " + fieldId));
+                .orElseThrow(() -> new EntityNotFoundException("Field not found: " + fieldId));
 
-        updatedDevice.setField(field);
-        field.setDevice(device);
+        Area area = areaRepository.findById(areaId)
+                .orElseThrow(() -> new EntityNotFoundException("Area not found: " + areaId));
+        Patch patch = patchRepository.findPatchById(patchId);
+
+        // link device → field & area
+        device.setField(field);
+        device.setArea(area);
+        device.setAttach_status(1); // attached
+        device.setPatch(patch);
+
+        // topics (you currently base them on fieldId)
+        String base = fieldId + "/" + device.getDevice_uuid();
+        device.setControl_topic(base + "/control");
+        device.setData_topic(base + "/data");
+        device.setNotification_topic(base + "/notification");
+        device.setDeviceState_topic(base + "/deviceState");
+
+        Device saved = deviceRepository.save(device);
+
+        // (optional) back-link field → device if you keep that relation
+        field.setDevice(saved);
         fieldRepository.save(field);
-        // Save updated device info to a JSON file
-        saveDeviceInfoToFile(updatedDevice);
 
-        // Subscribe to topics
-        subscribeToTopic(controlTopic);
-        subscribeToTopic(dataTopic);
-        subscribeToTopic(notificationTopic);
-        subscribeToTopic(deviceStateTopic);
-        //  subscribeToTopic(configurationReadyTopic);
-        System.out.println("Device subscribed to topics : " + "\n" + controlTopic + "\n" + dataTopic + "\n" + notificationTopic + "\n" + deviceStateTopic + "\n");
+        // existing side-effects you already had
+        saveDeviceInfoToFile(saved);
+        subscribeToTopic(saved.getControl_topic());
+        subscribeToTopic(saved.getData_topic());
+        subscribeToTopic(saved.getNotification_topic());
+        subscribeToTopic(saved.getDeviceState_topic());
 
-        return updatedDevice;
+        return saved;
     }
+
 
     private boolean topicExists(String topic) {
         // Implement the logic to check if the topic already exists
@@ -368,7 +378,14 @@ public class DeviceServiceImpl implements DeviceService {
             e.printStackTrace();
         }
     }
-
+    @Override
+    public List<Device> getPatchDevices(long patchId, long userId) {
+        return deviceRepository.findPatchDevices(patchId, userId);
+    }
+    @Override
+    public List<Device> getAreaDevices(int areaId, long userId) {
+        return deviceRepository.findActiveByAreaAndUser(areaId, userId);
+    }
     private void saveMasterDeviceInfoToFile(MasterDevice device) {
         try {
             String fileName = device.getDevice_name() + ".json";
